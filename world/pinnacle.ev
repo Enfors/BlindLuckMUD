@@ -1,0 +1,68 @@
+#
+# pinnacle.ev - create the small town of Pinnacle
+#
+# Dannil, 2021
+#
+
+# Start from Limbo.
+@tel #2
+
+# Create the first Temple room.
+@dig temple;temple#01
+
+# Create the exit from Limbo to the temple
+@open temple;login = temple#01
+
+# Describe the exit
+@desc temple =
+A swirling portal leads to the Temple in the middle of Pinnacle.
+
+# Go to the temple.
+temple
+
+# Describe it
+@desc
+This is a small square-shaped temple with marble pillars along the relief-covered walls. The view through the open exits in all directions reveal that the temple seems to be located on a hill in the center of a picturesque little town.
+
+# Dig to the cemetery.
+
+@dig cemetery = south;s
+
+# Go to the cemetery
+
+south
+
+# Describe it
+
+@desc
+This spooky cemetery seems to be largely abandoned. There are cracked tombstones everywhere, covered with moss. A temple is visible to the north.
+
+# Tunnel back to the temple
+
+tunnel n = temple
+
+# Go back to the temple
+
+north
+
+# Create street#001
+
+@dig street#001 = north;n
+
+# Go to street#001
+
+north
+
+# Describe it
+
+@desc
+A narrow street running east and west, just north of the temple. Buildings block movement to the north, but the temple can be reached by ascending the stone steps leading up the hill to the south.
+
+# Tunnel back to temple
+
+tunnel s = temple
+
+# Return to Limbo.
+@tel #2
+
+ 
