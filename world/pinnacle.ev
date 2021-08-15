@@ -7,11 +7,12 @@
 # Start from Limbo.
 @tel #2
 
+###### TEMPLE
 # Create the first Temple room.
-@dig temple;temple#01
+@dig temple;temple#001
 
 # Create the exit from Limbo to the temple
-@open temple;login = temple#01
+@open temple;login = temple#001
 
 # Describe the exit
 @desc
@@ -24,26 +25,42 @@ temple
 @desc here =
 This is a small square-shaped temple with marble pillars along the relief-covered walls. The view through the open exits in all directions reveal that the temple seems to be located on a hill in the center of a picturesque little town.
 
+# Create a statue.
+@create statue
+
+# Give the statue a name.
+@name statue = a large statue;statue;jaxta
+
+# And describe it.
+@desc statue = This is a large marble statue, carved in the unmistakable image of Jaxta, the Trickster Goddess. She is humanoid in form, with massive feathered wings on her back. Her beautiful face looks down upon you with the mischievous smile of someone who knows what you do not.
+
+# Drop it.
+@drop statue
+
+# Lock it in place.
+@lock statue = get:false()
+
+# Set a "prevent get" message.
+@set statue/get_err_msg = "It is firmly fixed to the floor. If you are trying to pick up women, then this is not the one."
+
+###### CEMETERY
 # Dig to the cemetery.
 
-tunnel/tel s = cemetery
+@tunnel/tel s = cemetery
 
 # Describe it
 
 @desc
 This spooky cemetery seems to be largely abandoned. There are cracked tombstones everywhere, covered with moss. A temple is visible to the north.
 
-# Tunnel back to the temple
-
-open
-
 # Go back to the temple
 
 north
 
+###### STREET#001
 # Create street#001
 
-tunnel/tel n = street#001
+@tunnel/tel n = street#001
 
 # Describe it
 
