@@ -5,7 +5,11 @@ Commands describe the input the account can do to the game.
 
 """
 
+import random
+
 from evennia.commands.command import Command as BaseCommand
+
+from evennia import create_object
 
 # from evennia import default_cmds
 
@@ -197,9 +201,76 @@ class CmdKill(Command):
     key = "kill"
     aliases = []
     lock = "cmd:all()"
-    help_category = "General"
+    help_category = "Combat"
 
     def func(self):
         "Attempts to kill another character."
 
-        self.caller.msg("Oh my, why so violent?")
+        caller = self.caller
+
+        if not self.args:
+            caller.msg("Usage: kill <who>")
+            return
+
+        target_name = self.args.strip()
+
+        target = caller.location.search(target_name)
+
+        if not target:
+            caller.msg(f"You don't see any {target_name} here.")
+            return
+
+        combat_result = random.randint(0, 1)
+
+        if combat_result == 1:
+            winner = caller
+            loser = target
+        else:
+            winner = target
+            loser = caller
+
+        winner.msg(f"You have defeated {loser.key}!")
+        loser.msg(f"You have been defeated by {winner.key}!")
+        caller.location.msg_contents(f"{winner.key} has defeated {loser.key}!",
+                                     exclude=[winner, loser])
+
+
+class CmdCreateNPC(Command):
+    """
+    Create a new NPC (non-player character).
+
+    Usage:
+      +createNPC <name>
+
+    Creates a new, named NPC.
+    """
+    key = "+createnpc"
+    aliases = ["createNPC"]
+    locks = "call:not perm(nonpcs)"
+    help_category = "wizard"
+
+    def func(self):
+        """
+        Creates the object and names it.
+        """
+        caller = self.caller
+
+        if not self.args:
+            caller.msg("Usage: +createNPC <name>")
+            return
+        if not caller.location:
+            # May not create an NPC when OOC
+            caller.msg("You must have a location to create an NPC.")
+            return
+        # Make the name always start with capital letter
+        name = self.args.strip().capitalize()
+        # Create an NPC in caller's location
+        npc = create_object("characters.Character",
+                            key=name,
+                            location=caller.location,
+                            locks=f"edit:id({caller.id}) and perm(Builders);call:false()")
+        # Announce
+        message = "%s created the NPC '%s'."
+        caller.msg(message % ("You", name))
+        caller.location.msg_contents(message % (caller.key, name),
+                                     exclude=caller)

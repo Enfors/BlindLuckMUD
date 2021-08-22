@@ -31,4 +31,8 @@ class Character(DefaultCharacter):
 
     """
 
-    pass
+    def at_object_creation(self):
+        """
+        This is called when the object is first created, only.
+        """
+        pass

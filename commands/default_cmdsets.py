@@ -16,7 +16,8 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 
 from evennia import default_cmds
 
-from commands.command import CmdKill
+from commands.command import CmdKill, CmdCreateNPC
+
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -33,6 +34,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         """
         super().at_cmdset_creation()
         self.add(CmdKill())
+        self.add(CmdCreateNPC())
         #
         # any commands you add below will overload the default ones.
         #
