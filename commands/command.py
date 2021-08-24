@@ -233,6 +233,125 @@ class CmdKill(Command):
         loser.msg(f"You have been defeated by {winner.key}!")
         caller.location.msg_contents(f"{winner.key} has defeated {loser.key}!",
                                      exclude=[winner, loser])
+        exp = 300
+        winner.receive_exp(exp)
+
+
+class CmdLevel(Command):
+    """
+    Show which level your character is.
+
+    Usage:
+      level
+    """
+    key = "level"
+    aliases = []
+    lock = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        caller = self.caller
+        level = caller.get_level()
+        caller.msg(f"You are level {level}.")
+
+        exp = caller.get_total_exp()
+        cost = caller.get_level_cost(level + 1)
+        caller.msg(f"You have {exp} experience points, "
+                   f"and need another {cost-exp} for next level.")
+
+        unused_pts = caller.get_unused_stat_pts()
+        if unused_pts == 1:
+            pts_form = "point"
+        else:
+            pts_form = "points"
+
+        if unused_pts == 0:
+            unused_pts = "no"
+
+        for stat in caller.stats:
+            long_stat = caller.stats_long[stat].capitalize()
+            stat_val = caller.get_stat(stat)
+            caller.msg(f"{long_stat:12}: {stat_val:2}")
+
+        caller.msg(f"You have {unused_pts} unused stat increase {pts_form}.")
+
+
+class CmdIncrease(Command):
+    """
+    Increase one of your stats. Valid stats are:
+
+    Intelligence
+    Charisma
+    Constitution
+    Strength
+    Dexterity
+    Perception
+    Wisdom
+
+    Each time you get a level, you get five stat increase points.
+    To show how much it costs to raise a stat, type:
+
+      increase
+
+    To increase a stat, type:
+
+      increase (stat)
+
+    For example:
+
+      increase wisdom
+    """
+    key = "increase"
+    aliases = ["inc"]
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        caller = self.caller
+
+        args = self.args
+
+        if not args:
+            self.show_costs(caller)
+        else:
+            self.inc_stat(caller, self.args.strip())
+
+    def show_costs(self, caller):
+        stats = caller.stats
+
+        caller.msg("The costs to increase your stats are as follows:")
+
+        for stat in stats:
+            cost = caller.get_inc_stat_cost(stat)
+            stats_long = caller.stats_long[stat]
+            caller.msg(f"{stats_long.capitalize():12}: {cost:2}")
+
+        unused_pts = caller.get_unused_stat_pts()
+
+        if unused_pts == 1:
+            pts_form = "point"
+        else:
+            pts_form = "points"
+
+        if unused_pts == 0:
+            unused_pts = "no"
+
+        caller.msg(f"You have {unused_pts} unused stat increase {pts_form} to increase your stats with.")
+
+    def inc_stat(self, caller, stat):
+        orig_stat = stat.lower()
+        stat = stat.lower()[:3]
+        stat_long = caller.stats_long[stat]  # Get "strength" from "str", etc.
+
+        if stat not in caller.stats:
+            caller.msg(f"{orig_stat.capitalize()} is not a valid stat.")
+            return False
+
+        if caller.inc_stat(stat):
+            new_val = caller.get_stat(stat)
+            caller.msg(f"Your {stat_long} has been increased to {new_val}.")
+        else:
+            caller.msg("Unfortunately, you do not have enough stat increase points to do that.")
 
 
 class CmdCreateNPC(Command):
